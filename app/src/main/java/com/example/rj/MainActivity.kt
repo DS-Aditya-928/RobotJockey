@@ -1,6 +1,7 @@
 package com.example.rj
 
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -15,6 +16,18 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+
+    fun generate4DTensor(shape: IntArray): Array<Array<Array<FloatArray>>>
+    {
+        val (d1, d2, d3, d4) = shape
+        return Array(d1) {
+            Array(d2) {
+                Array(d3) {
+                    FloatArray(d4) { kotlin.random.Random.nextFloat() }
+                }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,11 +52,23 @@ class MainActivity : AppCompatActivity() {
 
 // Creates inputs for reference.
         val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 1, 128, 431), DataType.FLOAT32)
+        val t = System.currentTimeMillis()
+        Log.i("Start", t.toString())
 
-        //inputFeature0.loadBuffer(byteBuffer)
+        for (i in 0..30)
+        {
+            val inputData = FloatArray(1 * 1 * 128 * 431) { kotlin.random.Random.nextFloat() }
+            inputFeature0.loadArray(inputData)
+            //inputFeature0.loadBuffer(byteBuffer)
 
 // Runs model inference and gets result.
-        val outputs = model.process(inputFeature0)
-        val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+            val outputs = model.process(inputFeature0)
+            val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+
+            Log.i("T$i", outputFeature0.floatArray.contentToString())
+        }
+
+        val t2 = System.currentTimeMillis()
+        Log.i("Total time", (t2 - t).toString())
     }
 }

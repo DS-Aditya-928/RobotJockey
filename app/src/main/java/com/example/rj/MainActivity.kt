@@ -12,6 +12,7 @@ import com.example.rj.databinding.ActivityMainBinding
 import com.example.rj.ml.TDeam
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
+import com.jlibrosa.audio.JLibrosa
 
 class MainActivity : AppCompatActivity() {
 
@@ -54,7 +55,15 @@ class MainActivity : AppCompatActivity() {
         val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 1, 128, 431), DataType.FLOAT32)
         val t = System.currentTimeMillis()
         Log.i("Start", t.toString())
-
+        val jlib = JLibrosa()
+        val randomArray = FloatArray(44100*5) {
+            val min = -1.0f
+            val max = 1.0f
+            min + kotlin.random.Random.nextFloat() * (max - min)
+        }
+        val x = jlib.generateMelSpectroGram(randomArray)
+        Log.i("size", x.size.toString())
+        Log.i("size2", x[0].size.toString())
         for (i in 0..30)
         {
             val inputData = FloatArray(1 * 1 * 128 * 431) { kotlin.random.Random.nextFloat() }
